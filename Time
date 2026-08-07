@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Memphis VHS Timestamp</title>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        overflow: hidden;
+    }
+
+    #timestamp {
+        position: absolute;
+        left: 30px;
+        bottom: 30px;
+
+        color: #ffffff;
+
+        font-family:
+            "Courier New",
+            "Lucida Console",
+            monospace;
+
+        font-size: 38px;
+        font-weight: bold;
+
+        letter-spacing: 1px;
+        line-height: 1;
+
+        white-space: nowrap;
+
+        /* Old camcorder-style shadow */
+        text-shadow:
+            2px 2px 0px rgba(0,0,0,0.95),
+            -1px -1px 0px rgba(0,0,0,0.75),
+            1px -1px 0px rgba(0,0,0,0.75),
+            -1px 1px 0px rgba(0,0,0,0.75);
+
+        /* Very subtle analog softness */
+        filter: blur(0.15px);
+    }
+
+    /* Extremely subtle VHS flicker */
+    .flicker {
+        animation: flicker 7s infinite;
+    }
+
+    @keyframes flicker {
+        0%, 94%, 100% {
+            opacity: 1;
+        }
+
+        95% {
+            opacity: 0.96;
+        }
+
+        96% {
+            opacity: 1;
+        }
+
+        97% {
+            opacity: 0.98;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div id="timestamp" class="flicker">
+    00/00/0000 00:00 AM
+</div>
+
+<script>
+
+function updateTimestamp() {
+
+    /*
+       Memphis, Tennessee uses the
+       America/Chicago time zone.
+
+       This automatically handles:
+       CST and CDT daylight-saving changes.
+    */
+
+    const now = new Date();
+
+    const options = {
+        timeZone: "America/Chicago",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+    };
+
+    const parts = new Intl.DateTimeFormat(
+        "en-US",
+        options
+    ).formatToParts(now);
+
+    let month = "";
+    let day = "";
+    let year = "";
+    let hour = "";
+    let minute = "";
+    let period = "";
+
+    parts.forEach(part => {
+
+        if (part.type === "month") {
+            month = part.value;
+        }
+
+        if (part.type === "day") {
+            day = part.value;
+        }
+
+        if (part.type === "year") {
+            year = part.value;
+        }
+
+        if (part.type === "hour") {
+            hour = part.value;
+        }
+
+        if (part.type === "minute") {
+            minute = part.value;
+        }
+
+        if (part.type === "dayPeriod") {
+            period = part.value.toUpperCase();
+        }
+
+    });
+
+    const timestamp =
+        `${month}/${day}/${year} ${hour}:${minute} ${period}`;
+
+    document.getElementById("timestamp").textContent = timestamp;
+}
+
+
+/* Start immediately */
+updateTimestamp();
+
+/* Keep the timestamp synchronized */
+setInterval(updateTimestamp, 1000);
+
+</script>
+
+</body>
+</html>
